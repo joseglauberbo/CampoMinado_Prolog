@@ -1,26 +1,33 @@
-/*Predicados que definem que o tabuleiro será 9x9*/
-totalLinhas(L):- L is 9.
-totalColunas(C):- C is 9.
+use_module(library(random)).
 
-/*Predicado para verificar se a posição é válida, ou seja, se está dentro da matriz*/
-posicaoValida(X,Y):- totalLinhas(L), totalColunas(C), X<L, Y<C. 
+criaMatriz(Matriz):- Matriz = [
+(1, 1, 0), (1, 2, 0), (1, 3, 0), (1, 4, 0), (1, 5, 0), (1, 6, 0), (1, 7, 0), (1, 8, 0), (1, 9, 0), 
+(2, 1, 0), (2, 2, 0), (2, 3, 0), (2, 4, 0), (2, 5, 0), (2, 6, 0), (2, 7, 0), (2, 8, 0), (2, 9, 0), 
+(3, 1, 0), (3, 2, 0), (3, 3, 0), (3, 4, 0), (3, 5, 0), (3, 6, 0), (3, 7, 0), (3, 8, 0), (3, 9, 0), 
+(4, 1, 0), (4, 2, 0), (4, 3, 0), (4, 4, 0), (4, 5, 0), (4, 6, 0), (4, 7, 0), (4, 8, 0), (4, 9, 0), 
+(5, 1, 0), (5, 2, 0), (5, 3, 0), (5, 4, 0), (5, 5, 0), (5, 6, 0), (5, 7, 0), (5, 8, 0), (5, 9, 0), 
+(6, 1, 0), (6, 2, 0), (6, 3, 0), (6, 4, 0), (6, 5, 0), (6, 6, 0), (6, 7, 0), (6, 8, 0), (6, 9, 0), 
+(7, 1, 0), (7, 2, 0), (7, 3, 0), (7, 4, 0), (7, 5, 0), (7, 6, 0), (7, 7, 0), (7, 8, 0), (7, 9, 0), 
+(8, 1, 0), (8, 2, 0), (8, 3, 0), (8, 4, 0), (8, 5, 0), (8, 6, 0), (8, 7, 0), (8, 8, 0), (8, 9, 0), 
+(9, 1, 0), (9, 2, 0), (9, 3, 0), (9, 4, 0), (9, 5, 0), (9, 6, 0), (9, 7, 0), (9, 8, 0), (9, 9, 0) 
+]. 
 
-/*Gerar random*/
+numeroAleatorio(X):- random(1, 10, X).	
 
-linha is random(1, 9, X).
-coluna is random(1, 9, X).
+geraBomba(Matriz, Matriz_modificada, 1):- numeroAleatorio(X), numeroAleatorio(Y), insereBombaNaMatriz(X, Y, Matriz, Matriz_modificada).
+geraBomba(Matriz, Matriz_modificada, Contador):- numeroAleatorio(X), numeroAleatorio(Y), insereBombaNaMatriz(X, Y, Matriz, Matriz_modificada),C is (Contador-1), geraBomba(Matriz, Matriz_modificada, C).
 
+insereBombaNaMatriz(_, _, [], []).
+insereBombaNaMatriz(X, Y, [(X, Y, _)|Corpo], [(X, Y, -1)|Corpo]).
+insereBombaNaMatriz(X, Y, [(Z, W, K)|Corpo], [(Z, W, K)|Res]):- insereBombaNaMatriz(X, Y, Corpo, Res).
 
+/*imprimeLinha(_,_,[],[]).
+imprimeLinha(Coluna,Linha, [(X,Y,Z)|Corpo], [W|K]):- Coluna =:=X, Linha =< 9, Linha =:= Y, W = Z,L is (Linha+1), imprimeLinha (Coluna,L, Corpo, K).
+*/
 
-
-
-
-/*exemplo de gerar random em c++*/
-
-    for(int i = 0; i <= quant_bombas; i++){
-
-        linha = rand() % size;
-        coluna = rand() % size;
-
-        campo_minado[linha][coluna] = -1;
- 
+main:- 
+read(Coordx),
+read(Coordy),
+criaMatriz(Matriz),
+geraBomba(Matriz, Matriz_Mod, 8),
+write(Matriz_Mod). 
