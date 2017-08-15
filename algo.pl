@@ -1,3 +1,5 @@
+:-[textos].
+
 use_module(library(random)).
 
 criaMatriz(Matriz):- Matriz = [
@@ -21,13 +23,21 @@ insereBombaNaMatriz(_, _, [], []).
 insereBombaNaMatriz(X, Y, [(X, Y, _)|Corpo], [(X, Y, -1)|Corpo]).
 insereBombaNaMatriz(X, Y, [(Z, W, K)|Corpo], [(Z, W, K)|Res]):- insereBombaNaMatriz(X, Y, Corpo, Res).
 
-/*imprimeLinha(_,_,[],[]).
-imprimeLinha(Coluna,Linha, [(X,Y,Z)|Corpo], [W|K]):- Coluna =:=X, Linha =< 9, Linha =:= Y, W = Z,L is (Linha+1), imprimeLinha (Coluna,L, Corpo, K).
-*/
+imprime([]).
+imprime([(_,_,X1),(_,_,X2), (_,_,X3), (_,_,X4), (_,_,X5), (_,_,X6), (_,_,X7), (_,_,X8), (_,_,X9)|Corpo]):- write("    |"),write(X1), write("|   |"), write(X2), write("|   |"), write(X3), write("|   |"), write(X4), write("|   |"), write(X5), write("|   |"), write(X6), write("|   |"), write(X7), write("|   |"), write(X8), write("|   |"), write(X9),write("|"),nl,imprime(Corpo).
 
+modificaMatriz([],[]).
+modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z =:= 0, Z2 = " ", modificaMatriz(Corpo,Corpo2).
+modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z =:= (-1), Z2 = "*", modificaMatriz(Corpo,Corpo2).
+modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z2 = Z, modificaMatriz(Corpo, Corpo2).
+
+/*atom_concat("| ",Z, R1)*/
 main:- 
+textos.
 read(Coordx),
 read(Coordy),
 criaMatriz(Matriz),
-geraBomba(Matriz, Matriz_Mod, 8),
-write(Matriz_Mod). 
+/*imprime(Matriz),nl,*/
+modificaMatriz(Matriz, M),nl,
+imprime(M),nl,
+geraBomba(Matriz, Matriz_Mod, 8).
