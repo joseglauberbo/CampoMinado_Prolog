@@ -1,4 +1,4 @@
-:-[textos].
+/*:-[textos].*/
 
 use_module(library(random)).
 
@@ -33,7 +33,7 @@ modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z2 = Z, modificaMatriz(
 
 /*atom_concat("| ",Z, R1)*/
 main:- 
-textos.
+/*textos.*/
 read(Coordx),
 read(Coordy),
 criaMatriz(Matriz),
