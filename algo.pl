@@ -31,13 +31,47 @@ modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z =:= 0, Z2 = " ", modi
 modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z =:= (-1), Z2 = "*", modificaMatriz(Corpo,Corpo2).
 modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z2 = Z, modificaMatriz(Corpo, Corpo2).
 
+
+
 /*atom_concat("| ",Z, R1)*/
+
+/*coordenadaX(X) :- coordx(X), X >= 1, X =< 9,
+	writeln("Digite um número entre 1 e 9: "), nl,
+	read_line_to_codes(user_input, X2),
+	string_to_atom(X2,X1),
+	atom_number(X1,X).
+
+coordenadaY(Y) :- coordy(Y), Y >= 1, Y =< 9,
+	writeln("Digite um número entre 1 e 9: "), nl,
+	read(Y),nl.	
+*/
+
+read_X(CoordX) :-
+	writeln("Digite uma coordenada x entre 1 e 9: "),
+	read_line_to_codes(user_input, X2),
+	(string_to_atom(X2,X1),
+	atom_number(X1,X), X =< 9, X >= 1) -> ( CoordX is X); (write("Número invalido"),nl, read_X(CoordX)).
+
+read_Y(CoordY) :-
+	writeln("Digite uma coordenada y entre 1 e 9: "),
+	read_line_to_codes(user_input, Y2),
+	(string_to_atom(Y2,Y1),
+	atom_number(Y1,Y), Y =< 9, Y >= 1) -> ( CoordY is Y); (write("Número invalido"),nl, read_Y(CoordY)).
+	
+	
+
+	
+
 main:- 
-/*textos.*/
+/*textos.
 read(Coordx),
 read(Coordy),
-criaMatriz(Matriz),
-/*imprime(Matriz),nl,*/
+coordenadaX(X),
+coordenadaY(X),*/
+read_X(CoordX),
+read_Y(CoordY).
+/*criaMatriz(Matriz),
+imprime(Matriz),nl,
 modificaMatriz(Matriz, M),nl,
-imprime(M),nl,
-geraBomba(Matriz, Matriz_Mod, 8).
+imprime(M),nl, 
+geraBomba(Matriz, Matriz_Mod, 8).*/
