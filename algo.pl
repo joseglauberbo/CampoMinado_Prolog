@@ -16,12 +16,15 @@ criaMatriz(Matriz):- Matriz = [
 
 numeroAleatorio(X):- random(1, 10, X).	
 
-geraBomba(Matriz, Matriz_modificada, 1):- numeroAleatorio(X), numeroAleatorio(Y), insereBombaNaMatriz(X, Y, Matriz, Matriz_modificada).
-geraBomba(Matriz, Matriz_modificada, Contador):- numeroAleatorio(X), numeroAleatorio(Y), insereBombaNaMatriz(X, Y, Matriz, Matriz_modificada),C is (Contador-1), geraBomba(Matriz, Matriz_modificada, C).
+editaMatriz([Hmatriz|Tmatriz], (CoordX, 0), Elem, [ListEditada|Tmatriz]):- editaListaCoord(Hmatriz, CoordX, Elem, ListEditada).
+editaMatriz([Hmatriz|Tmatriz], (CoordX, CoordY), Elem, NovaMatriz):-  Z is CoordY - 1, NovaMatriz = [Hmatriz|NovaTail], editaMatriz(Tmatriz, (CoordX, Z), Elem, NovaTail).
 
 insereBombaNaMatriz(_, _, [], []).
 insereBombaNaMatriz(X, Y, [(X, Y, _)|Corpo], [(X, Y, -1)|Corpo]).
 insereBombaNaMatriz(X, Y, [(Z, W, K)|Corpo], [(Z, W, K)|Res]):- insereBombaNaMatriz(X, Y, Corpo, Res).
+ 
+geraBomba(Matriz, Matriz_modificada, 1):- numeroAleatorio(X), numeroAleatorio(Y), insereBombaNaMatriz(X, Y, Matriz, Matriz_modificada).
+geraBomba(Matriz, Matriz_modificada, Contador):- numeroAleatorio(X), numeroAleatorio(Y), insereBombaNaMatriz(X, Y, Matriz, Matriz_modificada), C is Contador-1, geraBomba(Matriz, Matriz_modificada, C).
 
 imprime([]).
 imprime([(_,_,X1),(_,_,X2), (_,_,X3), (_,_,X4), (_,_,X5), (_,_,X6), (_,_,X7), (_,_,X8), (_,_,X9)|Corpo]):- write("    |"),write(X1), write("|   |"), write(X2), write("|   |"), write(X3), write("|   |"), write(X4), write("|   |"), write(X5), write("|   |"), write(X6), write("|   |"), write(X7), write("|   |"), write(X8), write("|   |"), write(X9),write("|"),nl,imprime(Corpo).
@@ -30,8 +33,6 @@ modificaMatriz([],[]).
 modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z =:= 0, Z2 = " ", modificaMatriz(Corpo,Corpo2).
 modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z =:= (-1), Z2 = "*", modificaMatriz(Corpo,Corpo2).
 modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z2 = Z, modificaMatriz(Corpo, Corpo2).
-
-
 
 /*atom_concat("| ",Z, R1)*/
 
@@ -48,11 +49,14 @@ read_Y(CoordY) :-
 	atom_number(Y1,Y), Y =< 9, Y >= 1) -> ( CoordY is Y); (write("Número invalido"),nl, read_Y(CoordY)).
 	
 main:- 
-/*textos.*/
+
 read_X(CoordX),
-read_Y(CoordY).
-criaMatriz(Matriz).
+read_Y(CoordY),
+
+criaMatriz(Matriz),
 imprime(Matriz),nl,
-modificaMatriz(Matriz, M),nl,
-imprime(M),nl, 
-geraBomba(Matriz, Matriz_Mod, 8).
+modificaMatriz(Matriz, Matriz_modificada),nl,
+imprime(Matriz_modificada).
+
+
+
