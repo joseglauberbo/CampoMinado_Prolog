@@ -59,13 +59,13 @@ abreCasa(X,Y, Matriz, Display, MatrizAberta):- getElem(X, Y, Matriz, Ele),
 
 /*Predicados que pedem ao usuario as coordenadas x e y*/
 read_X(CoordX) :-
-	writeln("Digite uma coordenada y entre 1 e 9: "),
+	writeln("Digite uma coordenada X entre 1 e 9: "),
 	read_line_to_codes(user_input, X2),
 	(string_to_atom(X2,X1),
 	atom_number(X1,X), X =< 9, X >= 1) -> ( CoordX is X); (write("Número invalido"),nl, read_X(CoordX)).
 
 read_Y(CoordY) :-
-	writeln("Digite uma coordenada x entre 1 e 9: "),
+	writeln("Digite uma coordenada Y entre 1 e 9: "),
 	read_line_to_codes(user_input, Y2),
 	(string_to_atom(Y2,Y1),
 	atom_number(Y1,Y), Y =< 9, Y >= 1) -> ( CoordY is Y); (write("Número invalido"),nl, read_Y(CoordY)).
@@ -75,9 +75,10 @@ editaLista(CoordX, CoordY, Elem, [(CoordX, CoordY, _)|T], [(CoordX, CoordY, Elem
 editaLista(CoordX, CoordY, Elem, [H|T], NovaLista):- NovaLista = [H|Ts],
 	editaLista(CoordX, CoordY, Elem, T, Ts).                        
 
-
+/*Gerando coordenada aleatória*/
 gerarCoordAleatoria(Coord):- numeroAleatorio(X), numeroAleatorio(Y), Coord = (X,Y).
 
+/*Predicado que gera as bombas*/
 gerandoBombas(NBombas, ListBombas):- length(TempList, NBombas),
 	maplist( gerarCoordAleatoria, TempList), sort(TempList, ListBombas).
 
