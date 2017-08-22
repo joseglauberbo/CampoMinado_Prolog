@@ -113,24 +113,29 @@ game(Matriz, Display):- read_X(X), read_Y(Y), getElem(X,Y, Matriz, Ele),
 	imprime(Nova), nl, 
 	textoPerdeu(), nl,
 	halt(0);
-	abreCasa(X,Y, Matriz, Display, NovoDisplay), 
-	naoGanhouJogo(NovoDisplay),
-	imprime(NovoDisplay), nl, game(Matriz, NovoDisplay)),nl;
-	textoGanhou(), halt(0).
-	
-/*Funcao que verifica se nao ganhou o jogo.*/
-naoGanhouJogo([]):-false.
-naoGanhouJogo([(_, _, " ")|_]).
-naoGanhouJogo([(_, _, _)|Corpo]):-naoGanhouJogo(Corpo).
 
+	abreCasa(X,Y, Matriz, Display, NovoDisplay), 
+	not(ganhouJogo(NovoDisplay, Matriz)),
+	imprime(NovoDisplay), nl, 
+	game(Matriz, NovoDisplay);
+	
+	ganhouJogo(NovoDisplay, Matriz),
+	modificaMatriz(Matriz, Nova),
+	imprime(Nova), nl, 
+	textoGanhou(), halt(0)).
+
+/*Funcao que verifica se nao ganhou o jogo.*/
+ganhouJogo([], []).
+ganhouJogo([(X, Y, " ")|Corpo],[(X, Y, -1)|C]):- ganhouJogo(Corpo, C).
+ganhouJogo([(X, Y, Z)|Corpo],[(X, Y, Z)|C]):- ganhouJogo(Corpo, C).
 
 main:- 
+	textoInicio(),
+	criaMatriz(0, Matriz),
+	criaMatriz(" ", Display),
+	gerandoBombas(8, Bombas),
+	insereBombaNaMatriz(Bombas, Matriz, MatrizComBombas),
+	imprime(Display),nl,
+	game(MatrizComBombas, Display).
 
-textoInicio(),
-criaMatriz(0, Matriz),
-criaMatriz(" ", Display),
-gerandoBombas(8, Bombas),
-insereBombaNaMatriz(Bombas, Matriz, MatrizComBombas),
-imprime(Display),nl,
-game(MatrizComBombas, Display).
 
