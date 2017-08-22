@@ -16,6 +16,18 @@ criaMatriz(Matriz):- Matriz = [
 (9, 1, 0), (9, 2, 0), (9, 3, 0), (9, 4, 0), (9, 5, 0), (9, 6, 0), (9, 7, 0), (9, 8, 0), (9, 9, 0) 
 ]. 
 
+criaMatrizUsuario(Matriz):- Matriz = [
+(1, 1, " "), (1, 2, " "), (1, 3, " "), (1, 4, " "), (1, 5, " "), (1, 6, " "), (1, 7, " "), (1, 8, " "), (1, 9, " "), 
+(2, 1, " "), (2, 2, " "), (2, 3, " "), (2, 4, " "), (2, 5, " "), (2, 6, " "), (2, 7, " "), (2, 8, " "), (2, 9, " "), 
+(3, 1, " "), (3, 2, " "), (3, 3, " "), (3, 4, " "), (3, 5, " "), (3, 6, " "), (3, 7, " "), (3, 8, " "), (3, 9, " "), 
+(4, 1, " "), (4, 2, " "), (4, 3, " "), (4, 4, " "), (4, 5, " "), (4, 6, " "), (4, 7, " "), (4, 8, " "), (4, 9, " "), 
+(5, 1, " "), (5, 2, " "), (5, 3, " "), (5, 4, " "), (5, 5, " "), (5, 6, " "), (5, 7, " "), (5, 8, " "), (5, 9, " "), 
+(6, 1, " "), (6, 2, " "), (6, 3, " "), (6, 4, " "), (6, 5, " "), (6, 6, " "), (6, 7, " "), (6, 8, " "), (6, 9, " "), 
+(7, 1, " "), (7, 2, " "), (7, 3, " "), (7, 4, " "), (7, 5, " "), (7, 6, " "), (7, 7, " "), (7, 8, " "), (7, 9, " "), 
+(8, 1, " "), (8, 2, " "), (8, 3, " "), (8, 4, " "), (8, 5, " "), (8, 6, " "), (8, 7, " "), (8, 8, " "), (8, 9, " "), 
+(9, 1, " "), (9, 2, " "), (9, 3, " "), (9, 4, " "), (9, 5, " "), (9, 6, " "), (9, 7, " "), (9, 8, " "), (9, 9, " ") 
+]. 
+
 numeroAleatorio(X):- random(1, 10, X).	
 
 editaListaCoord([Head|Tail], 0, Elem, [Elem|Tail]).
@@ -34,20 +46,27 @@ imprime([]).
 imprime([(_,_,X1),(_,_,X2), (_,_,X3), (_,_,X4), (_,_,X5), (_,_,X6), (_,_,X7), (_,_,X8), (_,_,X9)|Corpo]):- write("    |"),write(X1), write("|   |"), write(X2), write("|   |"), write(X3), write("|   |"), write(X4), write("|   |"), write(X5), write("|   |"), write(X6), write("|   |"), write(X7), write("|   |"), write(X8), write("|   |"), write(X9),write("|"),nl,imprime(Corpo).
 
 modificaMatriz([],[]).
-modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z =:= 0, Z2 = " ", modificaMatriz(Corpo,Corpo2).
+modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z =:= 0, Z2 = "_", modificaMatriz(Corpo,Corpo2).
 modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z =:= (-1), Z2 = "*", modificaMatriz(Corpo,Corpo2).
 modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z2 = Z, modificaMatriz(Corpo, Corpo2).
+
+
+abreCasa(X,Y, Matriz, Display, MatrizAberta):- getElem(X, Y, Matriz, Ele),
+	(Ele =:= 0 -> editaLista(X, Y, "_", Display, MatrizAberta);
+	Ele =:= (-1) -> editaLista(X, Y, "*", Display, MatrizAberta);
+	editaLista(X, Y, Ele, Display, MatrizAberta)).
+
 
 /*atom_concat("| ",Z, R1)*/
 
 read_X(CoordX) :-
-	writeln("Digite uma coordenada x entre 1 e 9: "),
+	writeln("Digite uma coordenada y entre 1 e 9: "),
 	read_line_to_codes(user_input, X2),
 	(string_to_atom(X2,X1),
 	atom_number(X1,X), X =< 9, X >= 1) -> ( CoordX is X); (write("Número invalido"),nl, read_X(CoordX)).
 
 read_Y(CoordY) :-
-	writeln("Digite uma coordenada y entre 1 e 9: "),
+	writeln("Digite uma coordenada x entre 1 e 9: "),
 	read_line_to_codes(user_input, Y2),
 	(string_to_atom(Y2,Y1),
 	atom_number(Y1,Y), Y =< 9, Y >= 1) -> ( CoordY is Y); (write("Número invalido"),nl, read_Y(CoordY)).
@@ -85,15 +104,19 @@ addDicas([(X,Y)|Tail], Matriz, NovaMatriz):- getElem(X, Y, Matriz, Ele), Z is El
 
 
 
+game(Matriz, Display):- read_X(X), read_Y(Y), getElem(X,Y, Matriz, Ele),
+	(Ele =:= (-1) -> modificaMatriz(Matriz, Nova),
+		imprime(Nova), nl, 
+		write("GAMEOVER! VOCÊ PERDEU!"),halt(0);
+	abreCasa(X,Y, Matriz, Display, NovoDisplay),
+	imprime(NovoDisplay), nl, game(Matriz, NovoDisplay)),nl.
+
 
 main:- 
 
-read_X(CoordX),
-read_Y(CoordY),
 criaMatriz(Matriz),
-imprime(Matriz),nl,
+criaMatrizUsuario(Display),
 gerandoBombas(8, Bombas),
-write(Bombas),nl,
-insereBombaNaMatriz(Bombas, Matriz, Matriz_modificada),
-modificaMatriz(Matriz_modificada, Matriz_modificada2),
-imprime(Matriz_modificada2),nl.
+insereBombaNaMatriz(Bombas, Matriz, MatrizComBombas),
+imprime(Display),nl,
+game(MatrizComBombas, Display).
