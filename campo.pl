@@ -19,13 +19,9 @@ criaMatriz(X, Matriz):- Matriz =
 /*Funcao para numeros aleatorios entre 1 e 10.*/
 numeroAleatorio(X):- random(1, 10, X).	
 
+/*Predicado usado para modificar o elemento*/
 editaListaCoord([_|Tail], 0, Elem, [Elem|Tail]).
 editaListaCoord([Head|Tail], Pos, Elem, NLista):- NLista is [Head|Ts], Z is Pos - 1, editaListaCoord(Tail, Z, Elem, Ts).
-
-/*Funcoes que geram as bombas*/
-/*Funcao que chama o insereBombaNaMatriz 8 vezes e no final chama o somaAdjacentes.*/
-%geraBomba(Matriz, Matriz_modificada, 1):- numeroAleatorio(X), numeroAleatorio(Y), insereBombaNaMatriz(X, Y, Matriz, Matriz_modificada).
-%geraBomba(Matriz, Matriz_modificada, Contador):- numeroAleatorio(X), numeroAleatorio(Y), insereBombaNaMatriz(X, Y, Matriz, Matriz_modificada), C is Contador-1, geraBomba(Matriz, Matriz_modificada, C).
 
 /*Funcao que insere as bombas na matriz.*/
 insereBombaNaMatriz([], Matriz, Matriz).
@@ -55,15 +51,13 @@ modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z =:= 0, Z2 = "_", modi
 modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z =:= (-1), Z2 = "*", modificaMatriz(Corpo,Corpo2).
 modificaMatriz([(_, _, Z)|Corpo], [(_, _, Z2)|Corpo2]):- Z2 = Z, modificaMatriz(Corpo, Corpo2).
 
-
+/*Predicado que mostra a casa para o usuario de acordo com a sua jogada*/
 abreCasa(X,Y, Matriz, Display, MatrizAberta):- getElem(X, Y, Matriz, Ele),
 	(Ele =:= 0 -> editaLista(X, Y, "_", Display, MatrizAberta);
 	Ele =:= (-1) -> editaLista(X, Y, "*", Display, MatrizAberta);
 	editaLista(X, Y, Ele, Display, MatrizAberta)).
 
-
-/*atom_concat("| ",Z, R1)*/
-
+/*Predicados que pedem ao usuario as coordenadas x e y*/
 read_X(CoordX) :-
 	writeln("Digite uma coordenada y entre 1 e 9: "),
 	read_line_to_codes(user_input, X2),
@@ -76,6 +70,7 @@ read_Y(CoordY) :-
 	(string_to_atom(Y2,Y1),
 	atom_number(Y1,Y), Y =< 9, Y >= 1) -> ( CoordY is Y); (write("Número invalido"),nl, read_Y(CoordY)).
 
+/*Edita a lista pegando as posições X e Y*/
 editaLista(CoordX, CoordY, Elem, [(CoordX, CoordY, _)|T], [(CoordX, CoordY, Elem)|T]).	
 editaLista(CoordX, CoordY, Elem, [H|T], NovaLista):- NovaLista = [H|Ts],
 	editaLista(CoordX, CoordY, Elem, T, Ts).                        
@@ -88,26 +83,27 @@ gerandoBombas(NBombas, ListBombas):- length(TempList, NBombas),
 
 coordValida(X,Y):- X > 0, X < 10, Y > 0, Y < 10.
 
+/*Filtra as coordenadas válidas*/
 filtraCoords([], _).
 filtraCoords([(X,Y)|Tcoords], Filtradas):- coordValida(X,Y) -> Filtradas = [(X,Y)|Ts], filtraCoords(Tcoords, Ts);
 Filtradas = Ts, filtraCoords(Tcoords, Ts).
 
-
+/*Predicado que icrementa os adjacentes*/
 getAdjacentes(X, Y, Adjacentes):- TodasAdjacentes = [(A,Y), (B,Y), (X,C), (X,D), (A,C), (A,D), (B,C), (B,D)],
 	A  is X + 1, B is X - 1, C is Y + 1, D is Y - 1,
 	filtraCoords(TodasAdjacentes, Adjacentes).
 
-
+/*Predicado que auxiliar-nos para encontrar as bombas*/
 getElem(X, Y, [(X, Y, Elem)|_], Elem).
 getElem(X,Y, [_|T], Elem):- getElem(X, Y, T, Elem).
 
-
+/*Predicado que soma 1 no elemento de uma coordenada*/
 addDicas([], Matriz, Matriz).
 addDicas([(X,Y)|Tail], Matriz, NovaMatriz):- getElem(X, Y, Matriz, Ele), Z is Ele + 1,
 	(Ele == -1 -> addDicas(Tail, Matriz, NovaMatriz);
 	editaLista(X, Y, Z, Matriz, TempMatriz), addDicas(Tail, TempMatriz, NovaMatriz)).
 
-
+/*Predicado que mostra ao usuario as suas jogadas*/
 game(Matriz, Display):- read_X(X), read_Y(Y), getElem(X,Y, Matriz, Ele),
 	(Ele =:= (-1) -> modificaMatriz(Matriz, Nova),
 	imprime(Nova), nl, 
