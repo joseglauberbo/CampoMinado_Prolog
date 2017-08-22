@@ -1,4 +1,4 @@
-/*:-[textos].*/
+:-[textos].
 
 use_module(library(random)).
 
@@ -111,12 +111,12 @@ addDicas([(X,Y)|Tail], Matriz, NovaMatriz):- getElem(X, Y, Matriz, Ele), Z is El
 game(Matriz, Display):- read_X(X), read_Y(Y), getElem(X,Y, Matriz, Ele),
 	(Ele =:= (-1) -> modificaMatriz(Matriz, Nova),
 	imprime(Nova), nl, 
-	write("GAMEOVER! VOCÊ PERDEU!"), nl,
+	textoPerdeu(), nl,
 	halt(0);
 	abreCasa(X,Y, Matriz, Display, NovoDisplay), 
 	naoGanhouJogo(NovoDisplay),
 	imprime(NovoDisplay), nl, game(Matriz, NovoDisplay)),nl;
-	write("GANHOU!!!"), halt(0).
+	textoGanhou(), halt(0).
 	
 /*Funcao que verifica se nao ganhou o jogo.*/
 naoGanhouJogo([]):-false.
@@ -126,6 +126,7 @@ naoGanhouJogo([(_, _, _)|Corpo]):-naoGanhouJogo(Corpo).
 
 main:- 
 
+textoInicio(),
 criaMatriz(0, Matriz),
 criaMatriz(" ", Display),
 gerandoBombas(8, Bombas),
