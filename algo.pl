@@ -2,6 +2,8 @@
 
 use_module(library(random)).
 
+:-initialization main.
+
 criaMatriz(Matriz):- Matriz = [
 (1, 1, 0), (1, 2, 0), (1, 3, 0), (1, 4, 0), (1, 5, 0), (1, 6, 0), (1, 7, 0), (1, 8, 0), (1, 9, 0), 
 (2, 1, 0), (2, 2, 0), (2, 3, 0), (2, 4, 0), (2, 5, 0), (2, 6, 0), (2, 7, 0), (2, 8, 0), (2, 9, 0), 
@@ -16,15 +18,17 @@ criaMatriz(Matriz):- Matriz = [
 
 numeroAleatorio(X):- random(1, 10, X).	
 
-editaMatriz([Hmatriz|Tmatriz], (CoordX, 0), Elem, [ListEditada|Tmatriz]):- editaListaCoord(Hmatriz, CoordX, Elem, ListEditada).
-editaMatriz([Hmatriz|Tmatriz], (CoordX, CoordY), Elem, NovaMatriz):-  Z is CoordY - 1, NovaMatriz = [Hmatriz|NovaTail], editaMatriz(Tmatriz, (CoordX, Z), Elem, NovaTail).
+editaListaCoord([Head|Tail], 0, Elem, [Elem|Tail]).
+editaListaCoord([Head|Tail], Pos, Elem, NLista):- NLista is [Head|Ts], Z is Pos - 1, editaListaCoord(Tail, Z, Elem, Ts).
 
-insereBombaNaMatriz(_, _, [], []).
-insereBombaNaMatriz(X, Y, [(X, Y, _)|Corpo], [(X, Y, -1)|Corpo]).
-insereBombaNaMatriz(X, Y, [(Z, W, K)|Corpo], [(Z, W, K)|Res]):- insereBombaNaMatriz(X, Y, Corpo, Res).
+insereBombaNaMatriz([], Matriz, Matriz).
+insereBombaNaMatriz([(X,Y)|TBombas], Matriz, NovaMatriz):- editaLista(X, Y, -1, Matriz, MatrizTemp),
+	getAdjacentes(X, Y, Adj),
+	addDicas(Adj, MatrizTemp, MatrizComDicas), 
+	insereBombaNaMatriz(TBombas, MatrizComDicas, NovaMatriz).
  
-geraBomba(Matriz, Matriz_modificada, 1):- numeroAleatorio(X), numeroAleatorio(Y), insereBombaNaMatriz(X, Y, Matriz, Matriz_modificada).
-geraBomba(Matriz, Matriz_modificada, Contador):- numeroAleatorio(X), numeroAleatorio(Y), insereBombaNaMatriz(X, Y, Matriz, Matriz_modificada), C is Contador-1, geraBomba(Matriz, Matriz_modificada, C).
+%geraBomba(Matriz, Matriz_modificada, 1):- numeroAleatorio(X), numeroAleatorio(Y), insereBombaNaMatriz(X, Y, Matriz, Matriz_modificada).
+%geraBomba(Matriz, Matriz_modificada, Contador):- numeroAleatorio(X), numeroAleatorio(Y), insereBombaNaMatriz(X, Y, Matriz, Matriz_modificada), C is Contador-1, geraBomba(Matriz, Matriz_modificada, C).
 
 imprime([]).
 imprime([(_,_,X1),(_,_,X2), (_,_,X3), (_,_,X4), (_,_,X5), (_,_,X6), (_,_,X7), (_,_,X8), (_,_,X9)|Corpo]):- write("    |"),write(X1), write("|   |"), write(X2), write("|   |"), write(X3), write("|   |"), write(X4), write("|   |"), write(X5), write("|   |"), write(X6), write("|   |"), write(X7), write("|   |"), write(X8), write("|   |"), write(X9),write("|"),nl,imprime(Corpo).
@@ -47,16 +51,49 @@ read_Y(CoordY) :-
 	read_line_to_codes(user_input, Y2),
 	(string_to_atom(Y2,Y1),
 	atom_number(Y1,Y), Y =< 9, Y >= 1) -> ( CoordY is Y); (write("Número invalido"),nl, read_Y(CoordY)).
-	
+
+editaLista(CoordX, CoordY, Elem, [(CoordX, CoordY, Z)|T], [(CoordX, CoordY, Elem)|T]).	
+editaLista(CoordX, CoordY, Elem, [H|T], NovaLista):- NovaLista = [H|Ts],
+	editaLista(CoordX, CoordY, Elem, T, Ts).                        
+
+
+gerarCoordAleatoria(Coord):- numeroAleatorio(X), numeroAleatorio(Y), Coord = (X,Y).
+
+gerandoBombas(NBombas, ListBombas):- length(TempList, NBombas),
+	maplist( gerarCoordAleatoria, TempList), sort(TempList, ListBombas).
+
+coordValida(X,Y):- X > 0, X < 10, Y > 0, Y < 10.
+
+filtraCoords([], Filtradas).
+filtraCoords([(X,Y)|Tcoords], Filtradas):- coordValida(X,Y) -> Filtradas = [(X,Y)|Ts], filtraCoords(Tcoords, Ts);
+Filtradas = Ts, filtraCoords(Tcoords, Ts).
+
+
+getAdjacentes(X, Y, Adjacentes):- TodasAdjacentes = [(A,Y), (B,Y), (X,C), (X,D), (A,C), (A,D), (B,C), (B,D)],
+	A  is X + 1, B is X - 1, C is Y + 1, D is Y - 1,
+	filtraCoords(TodasAdjacentes, Adjacentes).
+
+
+getElem(X, Y, [(X, Y, Elem)|T], Elem).
+getElem(X,Y, [H|T], Elem):- getElem(X, Y, T, Elem).
+
+
+addDicas([], Matriz, Matriz).
+addDicas([(X,Y)|Tail], Matriz, NovaMatriz):- getElem(X, Y, Matriz, Ele), Z is Ele + 1,
+	(Ele == -1 -> addDicas(Tail, Matriz, NovaMatriz);
+	editaLista(X, Y, Z, Matriz, TempMatriz), addDicas(Tail, TempMatriz, NovaMatriz)).
+
+
+
+
 main:- 
 
 read_X(CoordX),
 read_Y(CoordY),
-
 criaMatriz(Matriz),
 imprime(Matriz),nl,
-modificaMatriz(Matriz, Matriz_modificada),nl,
-imprime(Matriz_modificada).
-
-
-
+gerandoBombas(8, Bombas),
+write(Bombas),nl,
+insereBombaNaMatriz(Bombas, Matriz, Matriz_modificada),
+modificaMatriz(Matriz_modificada, Matriz_modificada2),
+imprime(Matriz_modificada2),nl.
